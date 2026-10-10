@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الأنشطة الحالية</title>
+  <style>
+    :root {
+      --primary-color: #0284c7;
+      --primary-light: #e0f2fe;
+      --bg-color: #f0f9ff;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --accent: #38bdf8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.08);
+      border: 1px solid var(--primary-light);
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      color: var(--primary-color);
+      margin-bottom: 6px;
+    }
+
+    .status-bar {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    main {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .activity-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(2, 132, 199, 0.05);
+      border-right: 5px solid var(--primary-color);
+      border-top: 1px solid var(--primary-light);
+      border-left: 1px solid var(--primary-light);
+      border-bottom: 1px solid var(--primary-light);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .activity-card:active {
+      transform: scale(0.99);
+    }
+
+    .activity-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 8px;
+    }
+
+    .activity-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .empty-state {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-muted);
+      border: 1px dashed var(--accent);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    }
+
+    .empty-state p {
+      font-size: 1rem;
+      margin-top: 8px;
+    }
+
+    .loader {
+      display: flex;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 4px solid var(--primary-light);
+      border-top-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>الأنشطة المتاحة الآن</h1>
+    <div class="status-bar">
+      <span class="pulse-dot"></span>
+      <span id="last-update">جاري تحديث البيانات...</span>
+    </div>
+  </header>
+
+  <main id="activities-container">
+    <div class="loader">
+      <div class="spinner"></div>
+    </div>
+  </main>
+
+  <script>
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRFQy3YlOfQIjajDxoaaz9gBe6MVqJYV3RLVws8PUI3gragzpuTy2qTD-oG1uvWvaLBt_Exik0g6ddN/pub?output=csv';
+
+    function parseCSV(csvText) {
+      const lines = [];
+      let currentRow = [];
+      let currentCell = '';
+      let insideQuotes = false;
+
+      for (let i = 0; i < csvText.length; i++) {
+        const char = csvText[i];
+        const nextChar = csvText[i + 1];
+
+        if (char === '"') {
+          if (insideQuotes && nextChar === '"') {
+            currentCell += '"';
+            i++;
+          } else {
+            insideQuotes = !insideQuotes;
+          }
+        } else if (char === ',' && !insideQuotes) {
+          currentRow.push(currentCell.trim());
+          currentCell = '';
+        } else if ((char === '\r' || char === '\n') && !insideQuotes) {
+          if (char === '\r' && nextChar === '\n') i++;
+          currentRow.push(currentCell.trim());
+          if (currentRow.some(cell => cell !== '')) {
+            lines.push(currentRow);
+          }
+          currentRow = [];
+          currentCell = '';
+        } else {
+          currentCell += char;
+        }
+      }
+
+      if (currentCell || currentRow.length > 0) {
+        currentRow.push(currentCell.trim());
+        if (currentRow.some(cell => cell !== '')) {
+          lines.push(currentRow);
+        }
+      }
+
+      return lines;
+    }
+
+    function parseStartAndEndDate(dateTimeStr, durationStr) {
+      if (!dateTimeStr) return null;
+
+      const cleanDT = dateTimeStr.trim();
+      let startDate = new Date(cleanDT);
+
+      if (isNaN(startDate.getTime())) {
+        const parts = cleanDT.split(' ');
+        if (parts.length >= 2) {
+          const datePart = parts[0].replace(/\//g, '-');
+          const timePart = parts.slice(1).join(' ');
+
+          const dParts = datePart.split('-');
+          let year, month, day;
+          let p1 = parseInt(dParts[0], 10);
+          let p2 = parseInt(dParts[1], 10);
+          let p3 = parseInt(dParts[2], 10);
+
+          if (p1 > 1000) { year = p1; month = p2 - 1; day = p3; }
+          else if (p3 > 1000) { day = p1; month = p2 - 1; year = p3; }
+
+          let isPM = /م|مساءً|PM/i.test(timePart);
+          let is12 = /ص|صباحاً|AM|م|مساءً|PM/i.test(timePart);
+          const tMatches = timePart.match(/\d+/g);
+
+          if (tMatches && year) {
+            let hours = parseInt(tMatches[0], 10);
+            let minutes = parseInt(tMatches[1], 10);
+
+            if (is12) {
+              if (isPM && hours < 12) hours += 12;
+              if (!isPM && hours === 12) hours = 0;
+            }
+
+            startDate = new Date(year, month, day, hours, minutes, 0, 0);
+          }
+        }
+      }
+
+      if (isNaN(startDate.getTime())) return null;
+
+      let endDate;
+      const durTrim = (durationStr || '').trim();
+
+      if (durTrim.includes(':') || /ص|م|AM|PM/i.test(durTrim)) {
+        endDate = new Date(durTrim);
+      }
+
+      if (!endDate || isNaN(endDate.getTime())) {
+        const durationMinutes = parseInt(durTrim, 10) || 0;
+        endDate = new Date(startDate.getTime() + durationMinutes * 60 * 1000);
+      }
+
+      return { startDate, endDate };
+    }
+
+    async function fetchAndRenderActivities() {
+      const container = document.getElementById('activities-container');
+      const updateLabel = document.getElementById('last-update');
+
+      try {
+        const response = await fetch(`${CSV_URL}&_t=${Date.now()}`);
+        const csvData = await response.text();
+        const rows = parseCSV(csvData);
+
+        const dataRows = rows.slice(1);
+        const now = new Date();
+
+        const activeActivities = [];
+
+        dataRows.forEach(row => {
+          const title = row[0] || '';       // العمود A: اسم النشاط
+          const desc = row[1] || '';        // العمود B: وصف النشاط
+          const dateTimeStr = row[2] || ''; // العمود C: تاريخ ووقت النشاط
+          const durationStr = row[3] || ''; // العمود D: مدة العرض أو وقت النهاية
+
+          const times = parseStartAndEndDate(dateTimeStr, durationStr);
+
+          if (times) {
+            if (now >= times.startDate && now < times.endDate) {
+              activeActivities.push({ title, desc });
+            }
+          }
+        });
+
+        if (activeActivities.length > 0) {
+          container.innerHTML = activeActivities.map(act => `
+            <div class="activity-card">
+              <div class="activity-title">${act.title}</div>
+              <div class="activity-desc">${act.desc}</div>
+            </div>
+          `).join('');
+        } else {
+          container.innerHTML = `
+            <div class="empty-state">
+              <h3>لا توجد أنشطة معروضة حالياً</h3>
+              <p>سيتم ظهور الأنشطة القادمة تلقائياً فور حلول موعدها.</p>
+            </div>
+          `;
+        }
+
+        const timeFormatted = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        updateLabel.innerText = `آخر تحديث: ${timeFormatted}`;
+
+      } catch (error) {
+        console.error('خطأ في جلب البيانات:', error);
+        updateLabel.innerText = 'حدث خطأ أثناء التحديث';
+      }
+    }
+
+    fetchAndRenderActivities();
+    setInterval(fetchAndRenderActivities, 60000);
+  </script>
+</body>
+</html>
