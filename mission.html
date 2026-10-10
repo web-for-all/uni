@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>جدول المهام اليومية</title>
+  <!-- Google Fonts: Cairo -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Favicon سيارة بتصميم زجاجي مظلم (SVG) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='28' fill='%230f172a'/><rect width='100' height='100' rx='28' fill='rgba(255,255,255,0.05)' stroke='rgba(255,255,255,0.15)' stroke-width='3'/><path d='M22 62h56c2.2 0 4-1.8 4-4v-7c0-2-1.3-3.7-3.2-4.2l-6.5-1.8-6.1-13.4C65 29.3 62.7 28 60.2 28H39.8c-2.5 0-4.8 1.3-6 3.6L27.7 45l-6.5 1.8C19.3 47.3 18 49 18 51v7c0 2.2 1.8 4 4 4z' fill='%236366f1'/><circle cx='32' cy='63' r='7' fill='%2338bdf8'/><circle cx='32' cy='63' r='3' fill='%230f172a'/><circle cx='68' cy='63' r='7' fill='%2338bdf8'/><circle cx='68' cy='63' r='3' fill='%230f172a'/><path d='M36 45l4.5-11h19l4.5 11H36z' fill='rgba(255,255,255,0.25)'/></svg>">
+  
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --primary-accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.4);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      margin-top: 10px;
+    }
+
+    /* Header & Maghrib Status Banner */
+    .header-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      text-align: center;
+    }
+
+    .header-card h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .maghrib-info {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .maghrib-info i {
+      color: #f59e0b;
+      font-size: 1.1rem;
+    }
+
+    /* Filter Controls */
+    .filter-group {
+      margin-bottom: 20px;
+    }
+
+    .filter-group label {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .custom-select {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      color: var(--text-main);
+      font-size: 1rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .custom-select:focus {
+      border-color: var(--primary-accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .custom-select option {
+      background: #0f172a;
+      color: #fff;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      margin-bottom: 20px;
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6366f1, #10b981);
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+
+    /* Task List */
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .task-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .task-card:active {
+      transform: scale(0.98);
+    }
+
+    .task-card.completed {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .checkbox-custom {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      border: 2px solid var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .task-card.completed .checkbox-custom {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .checkbox-custom i {
+      color: #fff;
+      font-size: 0.75rem;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.2s ease;
+    }
+
+    .task-card.completed .checkbox-custom i {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .task-title {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.4;
+      flex-grow: 1;
+      transition: color 0.2s ease;
+    }
+
+    .task-card.completed .task-title {
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+
+    .loading-spinner, .error-message {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .error-message {
+      color: #ef4444;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Header -->
+    <div class="header-card">
+      <h1><i class="fa-solid fa-calendar-check"></i> المهام اليومية</h1>
+      <div class="maghrib-info" id="maghribInfo">
+        <span><i class="fa-solid fa-moon"></i> صلاة المغرب القادمة:</span>
+        <strong id="maghribTime">جاري التحديد...</strong>
+      </div>
+    </div>
+
+    <!-- Dropdown Filter -->
+    <div class="filter-group">
+      <label for="timeSelect"><i class="fa-regular fa-clock"></i> اختر الفترة الزمنية:</label>
+      <select id="timeSelect" class="custom-select" disabled>
+        <option value="">جاري تحميل الفترات...</option>
+      </select>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <div class="progress-labels">
+        <span>نسبة الإنجاز</span>
+        <span id="progressText">0%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+    </div>
+
+    <!-- Tasks Checklist Container -->
+    <div id="taskList" class="task-list">
+      <div class="loading-spinner">
+        <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+        <p style="margin-top: 10px;">جاري تحميل المهام...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTFj1uyU360I7DBZyDS2KVPc2ZKMuZRblu7yk54XJ0srZCiU_RHgTaiUfXT086EXDYmNQDVnjv5l9Hv/pub?output=csv';
+    
+    let allTasks = [];
+    let completedTaskIds = new Set();
+    let currentCity = 'موقعك الحرفي';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await fetchMaghribTime();
+      checkAndResetAtMaghrib();
+      loadSavedTasks();
+      await fetchSheetData();
+    });
+
+    // 1. Fetch CSV Data from Google Sheets
+    async function fetchSheetData() {
+      try {
+        const response = await fetch(CSV_URL);
+        const data = await response.text();
+        parseCSV(data);
+      } catch (err) {
+        document.getElementById('taskList').innerHTML = `
+          <div class="error-message">
+            <i class="fa-solid fa-triangle-exclamation fa-2x"></i>
+            <p style="margin-top:10px;">حدث خطأ أثناء تحميل البيانات.</p>
+          </div>`;
+      }
+    }
+
+    // 2. Parse CSV text safely
+    function parseCSV(csvText) {
+      const lines = csvText.split('\n').filter(line => line.trim() !== '');
+      if (lines.length <= 1) return;
+
+      allTasks = [];
+      const timesSet = new Set();
+
+      // Skip header (i=1)
+      for (let i = 1; i < lines.length; i++) {
+        // Simple CSV splitter handling quoted values
+        const cols = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(col => col.replace(/^"\vert{}"$/g, '').trim());
+        
+        const time = cols[0] || '';
+        const order = parseInt(cols[1]) || 0;
+        const taskName = cols[2] || '';
+
+        if (time && taskName) {
+          const id = `${time}_${order}_${taskName}`;
+          allTasks.push({ id, time, order, taskName });
+          timesSet.add(time);
+        }
+      }
+
+      populateTimeDropdown(Array.from(timesSet));
+    }
+
+    // 3. Populate Time Dropdown
+    function populateTimeDropdown(times) {
+      const select = document.getElementById('timeSelect');
+      select.innerHTML = '';
+      select.disabled = false;
+
+      times.forEach((time, index) => {
+        const opt = document.createElement('option');
+        opt.value = time;
+        opt.textContent = time;
+        select.appendChild(opt);
+      });
+
+      select.addEventListener('change', (e) => renderTasks(e.target.value));
+
+      if (times.length > 0) {
+        renderTasks(times[0]);
+      }
+    }
+
+    // 4. Render Tasks for selected time
+    function renderTasks(selectedTime) {
+      const container = document.getElementById('taskList');
+      container.innerHTML = '';
+
+      const filteredTasks = allTasks
+        .filter(t => t.time === selectedTime)
+        .sort((a, b) => a.order - b.order);
+
+      if (filteredTasks.length === 0) {
+        container.innerHTML = '<p class="loading-spinner">لا توجد مهام لهذه الفترة.</p>';
+        updateProgress(0, 0);
+        return;
+      }
+
+      let completedCount = 0;
+
+      filteredTasks.forEach(task => {
+        const isDone = completedTaskIds.has(task.id);
+        if (isDone) completedCount++;
+
+        const card = document.createElement('div');
+        card.className = `task-card ${isDone ? 'completed' : ''}`;
+        card.innerHTML = `
+          <div class="checkbox-custom">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div class="task-title">${task.taskName}</div>
+        `;
+
+        card.addEventListener('click', () => {
+          toggleTask(task.id);
+          card.classList.toggle('completed');
+          updateProgressForCurrentList(selectedTime);
+        });
+
+        container.appendChild(card);
+      });
+
+      updateProgress(completedCount, filteredTasks.length);
+    }
+
+    // Toggle Task completion state
+    function toggleTask(id) {
+      if (completedTaskIds.has(id)) {
+        completedTaskIds.delete(id);
+      } else {
+        completedTaskIds.add(id);
+      }
+      saveTasks();
+    }
+
+    function updateProgressForCurrentList(selectedTime) {
+      const filteredTasks = allTasks.filter(t => t.time === selectedTime);
+      const done = filteredTasks.filter(t => completedTaskIds.has(t.id)).length;
+      updateProgress(done, filteredTasks.length);
+    }
+
+    function updateProgress(done, total) {
+      const percentage = total === 0 ? 0 : Math.round((done / total) * 100);
+      document.getElementById('progressBar').style.width = `${percentage}%`;
+      document.getElementById('progressText').textContent = `${percentage}% (${done}/${total})`;
+    }
+
+    // 5. LocalStorage Management
+    function saveTasks() {
+      localStorage.setItem('user_tasks_completed', JSON.stringify(Array.from(completedTaskIds)));
+    }
+
+    function loadSavedTasks() {
+      const saved = localStorage.getItem('user_tasks_completed');
+      if (saved) {
+        completedTaskIds = new Set(JSON.parse(saved));
+      }
+    }
+
+    // 6. Fetch Maghrib Prayer Time based on user Location
+    async function fetchMaghribTime() {
+      const maghribElement = document.getElementById('maghribTime');
+      
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(async (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          
+          try {
+            const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=4`);
+            const data = await res.json();
+            const maghribTimeStr = data.data.timings.Maghrib; // Format HH:MM
+            
+            localStorage.setItem('last_maghrib_time', maghribTimeStr);
+            maghribElement.textContent = `${maghribTimeStr}`;
+          } catch (e) {
+            maghribElement.textContent = 'تعذر الجلب التلقائي';
+          }
+        }, () => {
+          maghribElement.textContent = 'يرجى تفعيل الموقع (GPS)';
+        });
+      } else {
+        maghribElement.textContent = 'GPS غير مدعوم';
+      }
+    }
+
+    // 7. Reset Checklist Every Day at Maghrib
+    function checkAndResetAtMaghrib() {
+      const todayStr = new Date().toDateString();
+      const lastResetDate = localStorage.getItem('last_reset_date');
+      const maghribTimeStr = localStorage.getItem('last_maghrib_time'); // HH:MM
+
+      if (!maghribTimeStr) return;
+
+      const now = new Date();
+      const [mHours, mMinutes] = maghribTimeStr.split(':').map(Number);
+      
+      const maghribToday = new Date();
+      maghribToday.setHours(mHours, mMinutes, 0, 0);
+
+      // إذا تجاوزنا وقت المغرب اليوم ولم يتم التصفير لليوم بعد
+      if (now >= maghribToday && lastResetDate !== todayStr) {
+        completedTaskIds.clear();
+        saveTasks();
+        localStorage.setItem('last_reset_date', todayStr);
+      }
+    }
+  </script>
+</body>
+</html>
