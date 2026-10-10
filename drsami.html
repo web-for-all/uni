@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timetable Schedule</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --accent-color: #38bdf8;
+      --accent-hover: #818cf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --table-header-bg: #1e293b;
+      --mobile-card-bg: #1e293b;
+      --highlight-glow: #ec4899;
+      --highlight-border: #f43f5e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px 12px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+      animation: fadeIn 0.8s ease-in-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Top Progress Bar for Auto Refresh */
+    .refresh-bar-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .refresh-bar {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #38bdf8, #ec4899);
+      transform-origin: left;
+      transition: transform 1s linear;
+    }
+
+    /* Status Badge */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      background-color: #34d399;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #34d399;
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* Header Profile Section */
+    .header-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .profile-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      text-align: center;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      width: 85px;
+      height: 85px;
+      border-radius: 50%;
+      padding: 3px;
+      background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .avatar-wrapper:hover {
+      transform: scale(1.05);
+    }
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      background-color: #334155;
+    }
+
+    .profile-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .title-center {
+      text-align: center;
+      flex: 1;
+    }
+
+    .title-center h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #38bdf8, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 2px;
+    }
+
+    .title-center p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Desktop Table Styling */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    th, td {
+      padding: 14px 18px;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    th {
+      background-color: var(--table-header-bg);
+      color: var(--accent-color);
+      font-weight: 700;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    td:first-child, th:first-child {
+      position: sticky;
+      left: 0;
+      background-color: #1e293b;
+      font-weight: 700;
+      color: #f1f5f9;
+      border-right: 1px solid var(--border-color);
+      z-index: 2;
+    }
+
+    tr {
+      border-bottom: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    tbody tr:hover {
+      background-color: rgba(56, 189, 248, 0.08);
+    }
+
+    /* Desktop Current Day Row Highlighting */
+    tbody tr.current-day-row {
+      background: rgba(244, 63, 94, 0.12) !important;
+      border-left: 4px solid var(--highlight-border);
+    }
+
+    tbody tr.current-day-row td:first-child {
+      background-color: #2a1226 !important;
+      color: #f43f5e !important;
+      font-size: 1.05rem;
+    }
+
+    /* Highlight Current Slot / Time */
+    .current-slot {
+      background: rgba(244, 63, 94, 0.25) !important;
+      color: #fff !important;
+      font-weight: 700;
+      box-shadow: inset 0 0 12px rgba(244, 63, 94, 0.4);
+      border-radius: 8px;
+    }
+
+    th.current-slot-header {
+      color: #f43f5e !important;
+      border-bottom: 3px solid #f43f5e !important;
+    }
+
+    /* Loader UI */
+    .loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 0;
+      gap: 15px;
+      color: var(--text-muted);
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--border-color);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* =================================================== */
+    /* Mobile Cards View (Responsive Layout Transformation) */
+    /* =================================================== */
+    @media (max-width: 768px) {
+      .container {
+        padding: 16px;
+      }
+
+      .header-section {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+      }
+
+      .title-center {
+        order: -1;
+      }
+
+      .profile-card {
+        flex-direction: row;
+        width: 100%;
+        justify-content: flex-start;
+        gap: 15px;
+        background: rgba(255, 255, 255, 0.04);
+        padding: 10px 16px;
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+      }
+
+      .avatar-wrapper {
+        width: 55px;
+        height: 55px;
+      }
+
+      .profile-name {
+        font-size: 1rem;
+      }
+
+      /* Hide Desktop Table Structure */
+      .table-container {
+        border: none;
+        overflow: visible;
+      }
+
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      /* Mobile Day Card Container */
+      tbody tr {
+        background-color: var(--mobile-card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        margin-bottom: 20px;
+        padding: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        position: relative;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+      }
+
+      /* Current Day Glowing Animated Card in Mobile */
+      tbody tr.current-day-row {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(88, 28, 61, 0.35)) !important;
+        border: 2px solid var(--highlight-border) !important;
+        box-shadow: 0 0 25px rgba(244, 63, 94, 0.35) !important;
+        animation: pulseGlow 2.5s infinite alternate;
+      }
+
+      tbody tr.current-day-row::after {
+        content: "TODAY";
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        background: var(--highlight-border);
+        color: #fff;
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 3px 8px;
+        border-radius: 10px;
+        letter-spacing: 1px;
+      }
+
+      /* Day Title Header */
+      td:first-child {
+        position: static;
+        background: transparent !important;
+        border: none;
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--accent-color);
+        text-align: left;
+        padding: 0 0 12px 0;
+        margin-bottom: 12px;
+        border-bottom: 1px dashed var(--border-color) !important;
+      }
+
+      tbody tr.current-day-row td:first-child {
+        color: #f43f5e !important;
+      }
+
+      /* Time Slots Items */
+      td:not(:first-child) {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        font-size: 0.9rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        text-align: right;
+        white-space: normal;
+        border-radius: 8px;
+        margin-bottom: 4px;
+      }
+
+      td:not(:first-child):last-child {
+        border-bottom: none;
+      }
+
+      td:not(:first-child)::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 4px 8px;
+        border-radius: 6px;
+      }
+
+      /* Mobile Highlight Slot */
+      td.current-slot {
+        background: rgba(244, 63, 94, 0.2) !important;
+        border: 1px solid rgba(244, 63, 94, 0.5) !important;
+      }
+
+      td.current-slot::before {
+        color: #f43f5e;
+        background: rgba(244, 63, 94, 0.15);
+      }
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 15px rgba(244, 63, 94, 0.2); }
+      100% { box-shadow: 0 0 30px rgba(244, 63, 94, 0.5); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Auto Refresh Timer Bar -->
+    <div class="refresh-bar-container">
+      <div class="refresh-bar" id="refresh-progress"></div>
+    </div>
+
+    <!-- Header Section -->
+    <div class="header-section">
+      <!-- Right Profile (Cell A1, B1) -->
+      <div class="profile-card" id="profile-right">
+        <div class="avatar-wrapper">
+          <img id="img-b1" class="avatar-img" src="" alt="Profile 1" onerror="this.src='https://via.placeholder.com/150/1e293b/94a3b8?text=User'">
+        </div>
+        <div id="name-a1" class="profile-name">Loading...</div>
+      </div>
+
+      <!-- Main Title -->
+      <div class="title-center">
+        <h1>Weekly Timetable</h1>
+        
+        <div class="status-badge">
+          <span class="status-dot"></span>
+          <span>LIVE - Auto Updates</span>
+        </div>
+      </div>
+
+      <!-- Left Profile (Cell A2, B2) -->
+      <div class="profile-card" id="profile-left">
+        <div class="avatar-wrapper">
+          <img id="img-b2" class="avatar-img" src="" alt="Profile 2" onerror="this.src='https://via.placeholder.com/150/1e293b/94a3b8?text=User'">
+        </div>
+        <div id="name-a2" class="profile-name">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Timetable Area -->
+    <div class="table-container">
+      <div id="loading" class="loader">
+        <div class="spinner"></div>
+        <p>Please wait...</p>
+      </div>
+      <table id="timetable" style="display: none;">
+        <thead id="table-head"></thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7KkVFt2KZSy3kZZbxHPSvOle1ytvdVb--MQ8JYSlpsZ5UwKlqBt9wm9_d-21OhqeMFN3CON-RhkUj/pub?output=csv';
+    const REFRESH_INTERVAL_MS = 5 * 60 * 1000; // 5 Minutes
+    let refreshTimerProgress = null;
+
+    // Helper: CSV Parser
+    function parseCSV(text) {
+      const lines = text.trim().split('\n');
+      return lines.map(line => {
+        const values = [];
+        let insideQuote = false;
+        let currentValue = '';
+
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          if (char === '"') {
+            insideQuote = !insideQuote;
+          } else if (char === ',' && !insideQuote) {
+            values.push(currentValue.trim().replace(/^"|"$/g, ''));
+            currentValue = '';
+          } else {
+            currentValue += char;
+          }
+        }
+        values.push(currentValue.trim().replace(/^"|"$/g, ''));
+        return values;
+      });
+    }
+
+    // Days Mapper (English & Arabic)
+    const daysMap = {
+      sunday: ['sunday', 'أحد', 'الأحد'],
+      monday: ['monday', 'إثنين', 'الإثنين', 'اثنين'],
+      tuesday: ['tuesday', 'ثلاثاء', 'الثلاثاء'],
+      wednesday: ['wednesday', 'أربعاء', 'الأربعاء', 'اربعاء'],
+      thursday: ['thursday', 'خميس', 'الخميس'],
+      friday: ['friday', 'جمعة', 'الجمعة'],
+      saturday: ['saturday', 'سبت', 'السبت']
+    };
+
+    function getCurrentDayKey() {
+      const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+      return todayName;
+    }
+
+    function isCurrentDay(dayCellText) {
+      if (!dayCellText) return false;
+      const cleanText = dayCellText.trim().toLowerCase();
+      const currentKey = getCurrentDayKey();
+      const aliases = daysMap[currentKey] || [];
+      return aliases.some(alias => cleanText.includes(alias));
+    }
+
+    // Time slots detection helper
+    function isCurrentTimeSlot(timeHeaderText) {
+      if (!timeHeaderText) return false;
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+      // Extracts times like 08:00 - 09:00 or 8:30-10:00
+      const matches = timeHeaderText.match(/(\d{1,2}):(\d{2})/g);
+      if (matches && matches.length >= 2) {
+        const [startStr, endStr] = matches;
+        const [h1, m1] = startStr.split(':').map(Number);
+        const [h2, m2] = endStr.split(':').map(Number);
+
+        let startMin = h1 * 60 + m1;
+        let endMin = h2 * 60 + m2;
+
+        return currentMinutes >= startMin && currentMinutes < endMin;
+      }
+      return false;
+    }
+
+    async function loadSchedule() {
+      try {
+        // Add timestamp parameter to bypass cache during auto-refresh
+        const cacheBusterUrl = `${csvUrl}&t=${new Date().getTime()}`;
+        const response = await fetch(cacheBusterUrl);
+        const csvData = await response.text();
+        const rows = parseCSV(csvData);
+
+        if (!rows || rows.length < 4) return;
+
+        // Extract Profiles (Row 1 & Row 2)
+        const nameA1 = rows[0][0] || 'N/A';
+        const imgB1 = rows[0][1] || '';
+
+        const nameA2 = rows[1][0] || 'N/A';
+        const imgB2 = rows[1][1] || '';
+
+        document.getElementById('name-a1').innerText = nameA1;
+        document.getElementById('name-a2').innerText = nameA2;
+
+        if (imgB1) document.getElementById('img-b1').src = imgB1;
+        if (imgB2) document.getElementById('img-b2').src = imgB2;
+
+        // Table Starts from Row 4 (Index 3)
+        const headerRow = rows[3];
+        const dataRows = rows.slice(4);
+
+        // Render Desktop Header
+        const thead = document.getElementById('table-head');
+        let headerHTML = '<tr>';
+        
+        const activeTimeColIndexes = [];
+
+        headerRow.forEach((headerText, index) => {
+          const isCurrentSlot = isCurrentTimeSlot(headerText);
+          if (isCurrentSlot) activeTimeColIndexes.push(index);
+
+          const slotClass = isCurrentSlot ? 'current-slot-header' : '';
+          headerHTML += `<th class="${slotClass}">${headerText}</th>`;
+        });
+        headerHTML += '</tr>';
+        thead.innerHTML = headerHTML;
+
+        // Render Table Body
+        const tbody = document.getElementById('table-body');
+        let bodyHTML = '';
+
+        dataRows.forEach(row => {
+          if (row.length > 1 || row[0] !== '') {
+            const dayNameText = row[0] || '';
+            const isToday = isCurrentDay(dayNameText);
+            const rowClass = isToday ? 'current-day-row' : '';
+
+            bodyHTML += `<tr class="${rowClass}">`;
+            
+            row.forEach((cellText, colIndex) => {
+              const timeLabel = headerRow[colIndex] || '';
+              const isCurrentSlot = activeTimeColIndexes.includes(colIndex);
+              const slotClass = (isToday && isCurrentSlot) ? 'current-slot' : '';
+
+              bodyHTML += `<td class="${slotClass}" data-label="${timeLabel}">${cellText || '-'}</td>`;
+            });
+            bodyHTML += '</tr>';
+          }
+        });
+
+        tbody.innerHTML = bodyHTML;
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('timetable').style.display = 'table';
+
+        // Reset Refresh Bar Timer Animation
+        startProgressBar();
+
+      } catch (error) {
+        console.error('Error loading schedule:', error);
+        document.getElementById('loading').innerHTML = '<p style="color: #ef4444;">Failed to load data. Retrying...</p>';
+      }
+    }
+
+    // Auto Refresh Progress Bar Animation
+    function startProgressBar() {
+      const bar = document.getElementById('refresh-progress');
+      bar.style.transition = 'none';
+      bar.style.transform = 'scaleX(1)';
+      
+      setTimeout(() => {
+        bar.style.transition = `transform ${REFRESH_INTERVAL_MS}ms linear`;
+        bar.style.transform = 'scaleX(0)';
+      }, 50);
+    }
+
+    // Initial Load and Setup Interval
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSchedule();
+      
+      // Auto refresh Google Sheet Data every 5 minutes
+      setInterval(loadSchedule, REFRESH_INTERVAL_MS);
+    });
+  </script>
+</body>
+</html>
