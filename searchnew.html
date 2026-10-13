@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جدول الاختبارات</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z4CB1Y2F14"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-Z4CB1Y2F14');
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #9ec4ce;
+            --primary: #2563eb;
+            --primary-hover: #00aeff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --badge-bg: #f1f5f9;
+            --danger-bg: #fef2f2;
+            --danger-text: #991b1b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .search-box {
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+        }
+
+        .search-btn {
+            padding: 12px 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .search-btn:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+
+        .search-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status-msg {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .status-msg.error {
+            display: block;
+            background-color: var(--danger-bg);
+            color: var(--danger-text);
+        }
+
+        .results-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .exam-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .course-code {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .detail-item {
+            background: var(--badge-bg);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .detail-item.full-width {
+            grid-column: span 2;
+        }
+
+        .detail-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .detail-value {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .note-tag {
+            margin-top: 10px;
+            padding: 6px 10px;
+            background-color: #fef3c7;
+            color: #92400e;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            background: var(--card-bg);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>جدول الاختبارات</h1>
+        <p id="subHeader">أدخل رقمك الجامعي للإستعلام</p>
+    </div>
+
+    <div class="search-box" id="searchBox">
+        <input type="text" id="studentId" class="search-input" placeholder="أدخل الرقم الجامعي..." autocomplete="off">
+        <button type="button" id="searchBtn" class="search-btn" disabled>جاري التحميل...</button>
+    </div>
+
+    <div id="statusMsg" class="status-msg"></div>
+
+    <div id="results" class="results-container">
+        <div class="empty-state" id="emptyStateMsg">يرجى إدخال الرقم الجامعي والضغط على بحث.</div>
+    </div>
+
+</div>
+
+<script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVXhRDlundLq09ooA8bkjVO-9LxvReHxsjV0YUSoVlH0rtjclYVDmGfX8f6kkuUYNIBKd1-hlG03XE/pub?output=csv";
+    const CACHE_KEY = "STUDENT_EXAMS_DATA";
+    const CACHE_TIME_KEY = "STUDENT_EXAMS_TIMESTAMP";
+    const EXPIRE_TIME = 5 * 60 * 1000; // 5 دقائق
+
+    const arabicMonths = [
+        "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+        "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
+    ];
+
+    let allExams = [];
+    let isSystemActive = true;
+
+    const studentIdInput = document.getElementById("studentId");
+    const searchBtn = document.getElementById("searchBtn");
+    const searchBox = document.getElementById("searchBox");
+    const statusMsg = document.getElementById("statusMsg");
+    const resultsDiv = document.getElementById("results");
+    const subHeader = document.getElementById("subHeader");
+
+    function cleanText(val) {
+        return String(val || "").replace(/\uFEFF/g, "").trim();
+    }
+
+    function formatArabicDateTime(dateStr) {
+        if (!dateStr || dateStr === "-") return "-";
+
+        let dateObj = null;
+
+        const parts = dateStr.split(" ");
+        const dateParts = parts[0] ? parts[0].split("/") : [];
+        const timeParts = parts[1] ? parts[1].split(":") : [];
+
+        if (dateParts.length === 3) {
+            let month = parseInt(dateParts[0], 10) - 1;
+            let day = parseInt(dateParts[1], 10);
+            let year = parseInt(dateParts[2], 10);
+            if (year < 100) year += 2000;
+
+            let hour = timeParts[0] ? parseInt(timeParts[0], 10) : 0;
+            let minute = timeParts[1] ? parseInt(timeParts[1], 10) : 0;
+
+            dateObj = new Date(year, month, day, hour, minute);
+        } else {
+            dateObj = new Date(dateStr);
+        }
+
+        if (!dateObj || isNaN(dateObj.getTime())) {
+            return dateStr;
+        }
+
+        const day = dateObj.getDate();
+        const monthName = arabicMonths[dateObj.getMonth()];
+        const year = dateObj.getFullYear();
+
+        let hours = dateObj.getHours();
+        const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+        const period = hours >= 12 ? "م" : "ص";
+
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        const formattedHours = hours.toString().padStart(2, '0');
+
+        return `${day} ${monthName} ${year} الساعة ${formattedHours}:${minutes} ${period}`;
+    }
+
+    function parseCSV(text) {
+        const lines = text.split(/\r\n|\n/);
+        const result = [];
+        for (let line of lines) {
+            if (!line.trim()) continue;
+            const row = line.split(",").map(cell => cleanText(cell.replace(/^"|"$/g, '')));
+            result.push(row);
+        }
+        return result;
+    }
+
+    async function loadData() {
+        try {
+            let csvText = "";
+            const cachedData = localStorage.getItem(CACHE_KEY);
+            const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+
+            if (cachedData && cachedTime && (Date.now() - parseInt(cachedTime) < EXPIRE_TIME)) {
+                csvText = cachedData;
+            } else {
+                const response = await fetch(CSV_URL + "&t=" + Date.now());
+                if (!response.ok) throw new Error("تعذر جلب البيانات");
+                csvText = await response.text();
+                localStorage.setItem(CACHE_KEY, csvText);
+                localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
+            }
+
+            const rows = parseCSV(csvText);
+            if (rows.length < 2) throw new Error("الملف فارغ");
+
+            // فحص عمود الحالة STATUS (العمود رقم 7 أو Index 6)
+            // إذا كان مكتوب NO في أول صف بعد العناوين، يتم إغلاق النظام
+            const statusVal = rows[1][6] ? cleanText(rows[1][6]).toUpperCase() : "YES";
+
+            if (statusVal === "NO") {
+                isSystemActive = false;
+                searchBox.style.display = "none";
+                subHeader.style.display = "none";
+                resultsDiv.innerHTML = '<div class="empty-state">🛑 لا يوجد اختبارات حالياً.</div>';
+                return;
+            }
+
+            allExams = rows.slice(1).map(r => ({
+                id: cleanText(r[0]),
+                course: cleanText(r[1]),
+                room: cleanText(r[2]),
+                seat: cleanText(r[3]),
+                note: cleanText(r[4]),
+                date: cleanText(r[5])
+            })).filter(item => item.id !== "");
+
+            searchBtn.disabled = false;
+            searchBtn.textContent = "بحث";
+        } catch (err) {
+            console.error(err);
+            showStatus("حدث خطأ في تحميل البيانات. تأكد من اتصال الإنترنت أو إعدادات النشر.", "error");
+            searchBtn.textContent = "خطأ";
+        }
+    }
+
+    function showStatus(msg, type = "error") {
+        statusMsg.textContent = msg;
+        statusMsg.className = "status-msg " + type;
+    }
+
+    function hideStatus() {
+        statusMsg.textContent = "";
+        statusMsg.className = "status-msg";
+    }
+
+    function performSearch() {
+        if (!isSystemActive) return;
+
+        hideStatus();
+        const query = cleanText(studentIdInput.value).replace(/\s+/g, "");
+
+        if (!query) {
+            showStatus("يرجى كتابة الرقم الجامعي أولاً.");
+            resultsDiv.innerHTML = '<div class="empty-state">يرجى إدخال الرقم الجامعي والضغط على بحث.</div>';
+            return;
+        }
+
+        const studentExams = allExams.filter(e => e.id === query);
+
+        if (studentExams.length === 0) {
+            showStatus("لم يتم العثور على أي اختبارات لهذا الرقم الجامعي.");
+            resultsDiv.innerHTML = '';
+            return;
+        }
+
+        resultsDiv.innerHTML = studentExams.map(exam => `
+            <div class="exam-card">
+                <div class="course-code">${exam.course}</div>
+                <div class="details-grid">
+                    <div class="detail-item full-width">
+                        <div class="detail-label">تاريخ ووقت الاختبار</div>
+                        <div class="detail-value">${formatArabicDateTime(exam.date)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">القاعة</div>
+                        <div class="detail-value">${exam.room || '-'}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">المقعد</div>
+                        <div class="detail-value">${exam.seat || '-'}</div>
+                    </div>
+                </div>
+                ${exam.note ? `<div class="note-tag">ملاحظة: ${exam.note}</div>` : ''}
+            </div>
+        `).join('');
+    }
+
+    searchBtn.addEventListener("click", performSearch);
+    studentIdInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && !searchBtn.disabled) performSearch();
+    });
+
+    loadData();
+</script>
+
+</body>
+</html>
