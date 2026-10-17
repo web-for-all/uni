@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عيادة الدكتور رامي لطب الأسنان | حجز موعد ملكي</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Cairo & Tajawal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            100: '#FFF7D6',
+                            300: '#F3E5AB',
+                            400: '#E6CA65',
+                            500: '#D4AF37', // Main Royal Gold
+                            600: '#B89028',
+                            700: '#916F1B',
+                        },
+                        royal: {
+                            bg: '#070b12',
+                            card: '#0f172a',
+                            border: '#1e293b',
+                            accent: '#131e32',
+                            glow: '#d4af371a'
+                        }
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        tajawal: ['Tajawal', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'gold-glow': '0 0 25px -5px rgba(212, 175, 55, 0.3)',
+                        'gold-sm': '0 0 10px rgba(212, 175, 55, 0.2)',
+                        'card-depth': '0 20px 40px -15px rgba(0, 0, 0, 0.7)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #070b12;
+            color: #f8fafc;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(212, 175, 55, 0.05) 0%, transparent 35%),
+                radial-gradient(circle at 85% 85%, rgba(212, 175, 55, 0.04) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        /* Glassmorphism Styling */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .glass-card {
+            background: rgba(19, 30, 50, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover, .glass-card.selected {
+            border-color: rgba(212, 175, 55, 0.7);
+            background: rgba(25, 40, 68, 0.8);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #070b12;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 999px;
+        }
+
+        /* Metallic Gold Gradient Text */
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFF7D6 0%, #D4AF37 50%, #AA7C11 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Gold Gradient Button */
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #B89028 100%);
+            color: #070b12;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #F3E5AB 0%, #D4AF37 100%);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            transform: scale(1.02);
+        }
+
+        /* Date Scrollbar Hide */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Pulse Gold Ring */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .pulse-gold {
+            animation: pulse-ring 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-gold-500 selection:text-black">
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-40 border-b border-gold-500/20 bg-royal-bg/80 backdrop-blur-md">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-gold-600 to-gold-300 p-[1px] shadow-gold-sm">
+                    <div class="w-full h-full bg-royal-bg rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-tooth text-gold-500 text-lg"></i>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base md:text-lg text-slate-100 leading-tight">د. رامي لطب الأسنان</h1>
+                    <p class="text-[10px] text-gold-400 tracking-wider">عيادة الفخامة والكمال</p>
+                </div>
+            </div>
+            
+            <a href="tel:+201000000000" class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-gold-500/30 text-gold-400 hover:bg-gold-500/10 transition text-xs font-semibold">
+                <i class="fa-solid fa-phone"></i>
+                <span class="hidden sm:inline">إتصال مباشر</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-3xl mx-auto px-4 py-6 w-full flex-grow">
+
+        <!-- Hero Section -->
+        <section class="text-center mb-8 relative">
+            <div class="inline-block px-4 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/30 text-gold-400 text-xs font-semibold mb-3">
+                <i class="fa-solid fa-crown text-xs ml-1"></i> تجربة طبية ملكية استثنائية
+            </div>
+            <h2 class="text-2xl sm:text-4xl font-extrabold mb-3 leading-tight">
+                ابتسامتك اللامعة تبدأ من <span class="gold-gradient-text">العيادة الملكية</span>
+            </h2>
+            <p class="text-slate-400 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
+                احجز موعدك بسهولة مع الدكتور رامي، واستمتع بأرقى مستويات العناية والتجميل بأحدث التقنيات العالمية.
+            </p>
+        </section>
+
+        <!-- Progress Steps Indicator -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between relative max-w-md mx-auto px-4">
+                <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-0.5 bg-slate-800 -z-10"></div>
+                <div id="step-line" class="absolute right-0 top-1/2 -translate-y-1/2 h-0.5 bg-gold-500 transition-all duration-500 -z-10" style="width: 0%;"></div>
+
+                <!-- Step 1 -->
+                <div class="flex flex-col items-center">
+                    <div id="step-1-circle" class="w-9 h-9 rounded-full bg-gold-500 text-black font-bold flex items-center justify-center text-sm shadow-gold-sm transition-all duration-300">
+                        1
+                    </div>
+                    <span class="text-[11px] font-semibold mt-1 text-gold-400">الخدمة</span>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="flex flex-col items-center">
+                    <div id="step-2-circle" class="w-9 h-9 rounded-full bg-royal-card border-2 border-slate-700 text-slate-400 font-bold flex items-center justify-center text-sm transition-all duration-300">
+                        2
+                    </div>
+                    <span class="text-[11px] font-semibold mt-1 text-slate-500" id="step-2-text">الموعد</span>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="flex flex-col items-center">
+                    <div id="step-3-circle" class="w-9 h-9 rounded-full bg-royal-card border-2 border-slate-700 text-slate-400 font-bold flex items-center justify-center text-sm transition-all duration-300">
+                        3
+                    </div>
+                    <span class="text-[11px] font-semibold mt-1 text-slate-500" id="step-3-text">البيانات</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOOKING CONTAINER FORM -->
+        <form id="booking-form" onsubmit="handleBookingSubmit(event)" class="glass-panel rounded-2xl p-4 sm:p-6 shadow-card-depth">
+
+            <!-- STEP 1: SERVICE SELECTION -->
+            <div id="step-1-content" class="space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h3 class="text-base font-bold text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-gold-500"></i> اختر الخدمة المطلوبة
+                    </h3>
+                    <span class="text-xs text-slate-400">خطوة 1 من 3</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="services-grid">
+                    <!-- Dynamic rendering or pre-defined cards -->
+                    <div onclick="selectService(this, 'كشف عام واستشارة')" class="glass-card service-card p-3.5 rounded-xl cursor-pointer flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-gold-500/10 border border-gold-500/30 flex items-center justify-center text-gold-400 shrink-0">
+                            <i class="fa-solid fa-stethoscope text-lg"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h4 class="font-bold text-sm text-slate-100">كشف عام وفحص شامل</h4>
+                            <p class="text-[11px] text-slate-400">تشخيص كامل بأحدث الأشعة الرقمية</p>
+                        </div>
+                        <i class="fa-regular fa-circle text-slate-600 text-lg check-icon"></i>
+                    </div>
+
+                    <div onclick="selectService(this, 'تنظيف وتلميع الأسنان')" class="glass-card service-card p-3.5 rounded-xl cursor-pointer flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-gold-500/10 border border-gold-500/30 flex items-center justify-center text-gold-400 shrink-0">
+                            <i class="fa-solid fa-sparkles text-lg"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h4 class="font-bold text-sm text-slate-100">تنظيف وتلميع الجير</h4>
+                            <p class="text-[11px] text-slate-400">إزالة الترسبات والعناية اللثوية</p>
+                        </div>
+                        <i class="fa-regular fa-circle text-slate-600 text-lg check-icon"></i>
+                    </div>
+
+                    <div onclick="selectService(this, 'تبييض الأسنان بالليزر')" class="glass-card service-card p-3.5 rounded-xl cursor-pointer flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-gold-500/10 border border-gold-500/30 flex items-center justify-center text-gold-400 shrink-0">
+                            <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h4 class="font-bold text-sm text-slate-100">تبييض بالليزر (Hollywood)</h4>
+                            <p class="text-[11px] text-slate-400">ابتسامة ناصعة في جلسة واحدة</p>
+                        </div>
+                        <i class="fa-regular fa-circle text-slate-600 text-lg check-icon"></i>
+                    </div>
+
+                    <div onclick="selectService(this, 'تركيبات وتقويم الأسنان')" class="glass-card service-card p-3.5 rounded-xl cursor-pointer flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-gold-500/10 border border-gold-500/30 flex items-center justify-center text-gold-400 shrink-0">
+                            <i class="fa-solid fa-teeth-open text-lg"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h4 class="font-bold text-sm text-slate-100">تقويم وتركيبات الزيركون</h4>
+                            <p class="text-[11px] text-slate-400">حلول جذرية وتجميلية متطورة</p>
+                        </div>
+                        <i class="fa-regular fa-circle text-slate-600 text-lg check-icon"></i>
+                    </div>
+
+                    <div onclick="selectService(this, 'حشوات تجميلية وعلاج العصب')" class="glass-card service-card p-3.5 rounded-xl cursor-pointer flex items-center gap-3 sm:col-span-2">
+                        <div class="w-10 h-10 rounded-lg bg-gold-500/10 border border-gold-500/30 flex items-center justify-center text-gold-400 shrink-0">
+                            <i class="fa-solid fa-tooth text-lg"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <h4 class="font-bold text-sm text-slate-100">حشوات تجميلية وعلاج العصب</h4>
+                            <p class="text-[11px] text-slate-400">علاج بدون ألم باستخدام أحدث الأجهزة</p>
+                        </div>
+                        <i class="fa-regular fa-circle text-slate-600 text-lg check-icon"></i>
+                    </div>
+                </div>
+
+                <button type="button" onclick="goToStep(2)" id="btn-to-step2" disabled class="w-full py-3.5 rounded-xl btn-gold opacity-50 cursor-not-allowed flex items-center justify-center gap-2 font-bold text-sm mt-6">
+                    <span>الانتقال لاختيار الموعد</span>
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+            </div>
+
+            <!-- STEP 2: DATE & TIME SELECTION -->
+            <div id="step-2-content" class="space-y-5 hidden">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h3 class="text-base font-bold text-slate-200 flex items-center gap-2">
+                        <i class="fa-regular fa-calendar-check text-gold-500"></i> حدد اليوم والوقت المناسب
+                    </h3>
+                    <span class="text-xs text-slate-400">خطوة 2 من 3</span>
+                </div>
+
+                <!-- Interactive Date Carousel -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-2">اختر اليوم (الأيام المتاحة هذا الأسبوع):</label>
+                    <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar" id="date-picker-container">
+                        <!-- Dates generated dynamically by JS -->
+                    </div>
+                </div>
+
+                <!-- Time Slot Picker -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-2">اختر التوقيت:</label>
+                    
+                    <!-- Shift Tabs -->
+                    <div class="flex gap-2 mb-3 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+                        <button type="button" onclick="filterShift('morning')" id="shift-m-btn" class="flex-1 py-1.5 text-xs font-bold rounded-lg bg-gold-500 text-black transition">
+                            <i class="fa-regular fa-sun ml-1"></i> الفترة الصباحية
+                        </button>
+                        <button type="button" onclick="filterShift('evening')" id="shift-e-btn" class="flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">
+                            <i class="fa-regular fa-moon ml-1"></i> الفترة المسائية
+                        </button>
+                    </div>
+
+                    <!-- Slots Container -->
+                    <div class="grid grid-cols-3 sm:grid-cols-4 gap-2.5" id="slots-container">
+                        <!-- Slots injected dynamically by JS -->
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="goToStep(1)" class="w-1/3 py-3 rounded-xl border border-slate-700 hover:border-gold-500/50 text-slate-300 font-semibold text-sm transition">
+                        السابق
+                    </button>
+                    <button type="button" onclick="goToStep(3)" id="btn-to-step3" disabled class="w-2/3 py-3 rounded-xl btn-gold opacity-50 cursor-not-allowed flex items-center justify-center gap-2 font-bold text-sm">
+                        <span>إدخال البيانات</span>
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 3: PATIENT INFORMATION -->
+            <div id="step-3-content" class="space-y-4 hidden">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h3 class="text-base font-bold text-slate-200 flex items-center gap-2">
+                        <i class="fa-regular fa-user text-gold-500"></i> بيانات المريض الشخصية
+                    </h3>
+                    <span class="text-xs text-slate-400">خطوة 3 من 3</span>
+                </div>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">الاسم الثلاثي <span class="text-gold-500">*</span></label>
+                        <div class="relative">
+                            <i class="fa-regular fa-id-card absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                            <input type="text" id="patient-name" required placeholder="أدخل اسمك كاملاً" class="w-full pr-10 pl-3 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-100 text-xs sm:text-sm focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">رقم الجوال (واتساب) <span class="text-gold-500">*</span></label>
+                        <div class="relative">
+                            <i class="fa-solid fa-phone absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                            <input type="tel" id="patient-phone" required placeholder="05xxxxxxxx أو 01xxxxxxxxx" class="w-full pr-10 pl-3 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-100 text-xs sm:text-sm focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none transition text-left" dir="ltr">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">البريد الإلكتروني (اختياري)</label>
+                        <div class="relative">
+                            <i class="fa-regular fa-envelope absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                            <input type="email" id="patient-email" placeholder="example@mail.com" class="w-full pr-10 pl-3 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-100 text-xs sm:text-sm focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none transition text-left" dir="ltr">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1.5">هل هذه زيارتك الأولى لعيادة د. رامي؟</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center gap-2 cursor-pointer bg-slate-900/60 border border-slate-800 hover:border-gold-500/50 px-4 py-2 rounded-xl text-xs flex-1">
+                                <input type="radio" name="first_visit" value="نعم" checked class="accent-gold-500">
+                                <span>نعم، زيارة أولى</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer bg-slate-900/60 border border-slate-800 hover:border-gold-500/50 px-4 py-2 rounded-xl text-xs flex-1">
+                                <input type="radio" name="first_visit" value="لا" class="accent-gold-500">
+                                <span>مريض سابق بالعيادة</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">سبب الزيارة أو الأعراض (اختياري)</label>
+                        <textarea id="patient-notes" rows="2" placeholder="اكتب اختصاراً لما تعاني منه أو أي ملاحظة للطبيب..." class="w-full p-3 rounded-xl bg-slate-900/90 border border-slate-700 text-slate-100 text-xs focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none transition resize-none"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="goToStep(2)" class="w-1/3 py-3 rounded-xl border border-slate-700 hover:border-gold-500/50 text-slate-300 font-semibold text-sm transition">
+                        السابق
+                    </button>
+                    <button type="submit" class="w-2/3 py-3 rounded-xl btn-gold flex items-center justify-center gap-2 font-bold text-sm shadow-gold-glow">
+                        <i class="fa-solid fa-check-double"></i>
+                        <span>تأكيد الموعد واستعراض الملخص</span>
+                    </button>
+                </div>
+            </div>
+
+        </form>
+
+        <!-- Doctor Brief Info Footer Card -->
+        <div class="mt-8 glass-card rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-right">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-gold-500 to-gold-200 p-0.5 shrink-0 shadow-gold-sm">
+                <img src="https://placehold.co/150x150/0b1320/D4AF37?text=Dr.Ramy" alt="Doctor" class="w-full h-full rounded-full object-cover">
+            </div>
+            <div>
+                <h4 class="font-bold text-sm text-slate-200">الدكتور رامي</h4>
+                <p class="text-xs text-gold-400 mb-1">أخصائي جراحة وتجميل الأسنان - عضو الجمعية الدولية</p>
+                <p class="text-[11px] text-slate-400 leading-relaxed">تجهيزات طبية متطورة، تعقيم شامل بدرجات عالمية، وأعلى معايير الراحة لمرضانا الكرام.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 py-4 text-center text-xs text-slate-500 bg-royal-bg/90">
+        <p>جميع الحقوق محفوظة © عيادة الدكتور رامي لطب الأسنان 2026</p>
+    </footer>
+
+    <!-- CONFIRMATION & WHATSAPP MODAL -->
+    <div id="confirmation-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass-panel w-full max-w-md rounded-2xl p-5 sm:p-6 shadow-card-depth border border-gold-500/40 relative transform scale-95 transition-all duration-300" id="modal-box">
+            
+            <button onclick="closeModal()" class="absolute top-4 left-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-5">
+                <div class="w-12 h-12 rounded-full bg-gold-500/20 text-gold-400 flex items-center justify-center mx-auto mb-2 text-xl border border-gold-500/40">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-100">تأكيد حجز الموعد الملكي</h3>
+                <p class="text-xs text-slate-400">يرجى مراجعة التفاصيل أدناه وإرسال الحجز للعيادة</p>
+            </div>
+
+            <!-- Summary Details Box -->
+            <div class="bg-slate-900/90 rounded-xl p-3.5 space-y-2.5 text-xs border border-slate-800 mb-5">
+                <div class="flex justify-between pb-2 border-b border-slate-800">
+                    <span class="text-slate-400">الخدمة المختارة:</span>
+                    <span class="font-bold text-gold-400" id="sum-service">-</span>
+                </div>
+                <div class="flex justify-between pb-2 border-b border-slate-800">
+                    <span class="text-slate-400">التاريخ واليوم:</span>
+                    <span class="font-bold text-slate-200" id="sum-date">-</span>
+                </div>
+                <div class="flex justify-between pb-2 border-b border-slate-800">
+                    <span class="text-slate-400">التوقيت:</span>
+                    <span class="font-bold text-slate-200" id="sum-time">-</span>
+                </div>
+                <div class="flex justify-between pb-2 border-b border-slate-800">
+                    <span class="text-slate-400">اسم المريض:</span>
+                    <span class="font-bold text-slate-200" id="sum-name">-</span>
+                </div>
+                <div class="flex justify-between pb-2 border-b border-slate-800">
+                    <span class="text-slate-400">رقم الهاتف:</span>
+                    <span class="font-bold text-slate-200" id="sum-phone">-</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">زيارة أولى:</span>
+                    <span class="font-bold text-slate-200" id="sum-first">-</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-2.5">
+                <button onclick="confirmAndSendWhatsApp()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>تأكيد وإرسال عبر الواتساب</span>
+                </button>
+                <button onclick="closeModal()" class="w-full py-2.5 rounded-xl border border-slate-700 text-slate-400 hover:text-white text-xs font-semibold">
+                    تعديل البيانات
+                </button>
+            </div>
+            <p class="text-[10px] text-slate-500 text-center mt-3">سيتم توجيهك فوراً للمحادثة المباشرة لعيادة الدكتور رامي لتأكيد حجزك.</p>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC & INTERACTION -->
+    <script>
+        // State Management
+        let currentStep = 1;
+        let selectedService = '';
+        let selectedDate = null; // Object { dayName, dateStr, fullDisplay }
+        let selectedTimeSlot = '';
+        let activeShift = 'morning';
+
+        // Mock Time Slots Data
+        const timeSlots = {
+            morning: [
+                { time: '10:00 صباحاً', status: 'available' },
+                { time: '10:30 صباحاً', status: 'available' },
+                { time: '11:00 صباحاً', status: 'booked' },
+                { time: '11:30 صباحاً', status: 'available' },
+                { time: '12:00 ظهراً', status: 'available' },
+                { time: '12:30 ظهراً', status: 'booked' },
+            ],
+            evening: [
+                { time: '05:00 مساءً', status: 'available' },
+                { time: '05:30 مساءً', status: 'available' },
+                { time: '06:00 مساءً', status: 'booked' },
+                { time: '06:30 مساءً', status: 'available' },
+                { time: '07:00 مساءً', status: 'available' },
+                { time: '07:30 مساءً', status: 'available' },
+                { time: '08:00 مساءً', status: 'booked' },
+                { time: '08:30 مساءً', status: 'available' },
+            ]
+        };
+
+        // Initialize on Load
+        window.onload = function() {
+            generateNext7Days();
+            renderSlots();
+        };
+
+        // Generate Next 7 Days Interactive Selector
+        function generateNext7Days() {
+            const container = document.getElementById('date-picker-container');
+            container.innerHTML = '';
+
+            const daysArabic = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+            const monthsArabic = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+
+            const today = new Date();
+
+            for (let i = 0; i < 7; i++) {
+                const nextDate = new Date();
+                nextDate.setDate(today.getDate() + i);
+
+                const dayName = daysArabic[nextDate.getDay()];
+                const dayNum = nextDate.getDate();
+                const monthName = monthsArabic[nextDate.getMonth()];
+                const fullStr = `${dayName} (${dayNum} ${monthName})`;
+
+                // Is Friday check (Clinic Closed Example)
+                const isFriday = nextDate.getDay() === 5; 
+
+                const dateCard = document.createElement('div');
+                dateCard.className = `glass-card min-w-[85px] p-2.5 rounded-xl text-center cursor-pointer flex-shrink-0 transition ${isFriday ? 'opacity-40 cursor-not-allowed bg-slate-900/40' : ''}`;
+                
+                dateCard.innerHTML = `
+                    <span class="block text-[11px] text-slate-400 font-semibold mb-1">${dayName}</span>
+                    <span class="block text-base font-extrabold text-gold-400">${dayNum}</span>
+                    <span class="block text-[10px] text-slate-500">${monthName}</span>
+                    ${isFriday ? '<span class="text-[9px] text-red-400 mt-1 block">عطلة</span>' : ''}
+                `;
+
+                if (!isFriday) {
+                    dateCard.onclick = function() {
+                        document.querySelectorAll('#date-picker-container > div').forEach(el => el.classList.remove('selected', 'border-gold-500', 'bg-gold-500/10'));
+                        dateCard.classList.add('selected', 'border-gold-500', 'bg-gold-500/10');
+                        selectedDate = { dayName, dayNum, monthName, fullDisplay: fullStr };
+                        validateStep2();
+                    };
+                }
+
+                container.appendChild(dateCard);
+            }
+        }
+
+        // Service Selection Logic
+        function selectService(element, serviceName) {
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.classList.remove('selected');
+                const icon = card.querySelector('.check-icon');
+                icon.className = 'fa-regular fa-circle text-slate-600 text-lg check-icon';
+            });
+
+            element.classList.add('selected');
+            const icon = element.querySelector('.check-icon');
+            icon.className = 'fa-solid fa-circle-check text-gold-500 text-lg check-icon';
+
+            selectedService = serviceName;
+            
+            // Enable Next Button
+            const btn = document.getElementById('btn-to-step2');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        // Shift Filter (Morning / Evening)
+        function filterShift(shift) {
+            activeShift = shift;
+            const mBtn = document.getElementById('shift-m-btn');
+            const eBtn = document.getElementById('shift-e-btn');
+
+            if(shift === 'morning') {
+                mBtn.className = "flex-1 py-1.5 text-xs font-bold rounded-lg bg-gold-500 text-black transition";
+                eBtn.className = "flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition";
+            } else {
+                eBtn.className = "flex-1 py-1.5 text-xs font-bold rounded-lg bg-gold-500 text-black transition";
+                mBtn.className = "flex-1 py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition";
+            }
+
+            renderSlots();
+        }
+
+        // Render Time Slots
+        function renderSlots() {
+            const container = document.getElementById('slots-container');
+            container.innerHTML = '';
+
+            const list = timeSlots[activeShift];
+
+            list.forEach(slot => {
+                const isBooked = slot.status === 'booked';
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.disabled = isBooked;
+
+                button.className = `p-2 rounded-xl text-xs font-semibold transition flex flex-col items-center justify-center border ${
+                    isBooked 
+                    ? 'bg-slate-900/40 border-slate-800 text-slate-600 line-through cursor-not-allowed' 
+                    : 'glass-card border-slate-800 text-slate-200 hover:border-gold-500/60'
+                }`;
+
+                button.innerHTML = `
+                    <span>${slot.time}</span>
+                    <span class="text-[9px] mt-0.5 ${isBooked ? 'text-red-500' : 'text-emerald-400'}">
+                        ${isBooked ? 'مكتمل' : 'متاح'}
+                    </span>
+                `;
+
+                if(!isBooked) {
+                    button.onclick = function() {
+                        document.querySelectorAll('#slots-container button').forEach(b => b.classList.remove('border-gold-500', 'bg-gold-500/20', 'text-gold-400'));
+                        button.classList.add('border-gold-500', 'bg-gold-500/20', 'text-gold-400');
+                        selectedTimeSlot = slot.time;
+                        validateStep2();
+                    };
+                }
+
+                container.appendChild(button);
+            });
+        }
+
+        // Validate Step 2 to enable Next Step
+        function validateStep2() {
+            const btn = document.getElementById('btn-to-step3');
+            if(selectedDate && selectedTimeSlot) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        // Navigation between Steps
+        function goToStep(step) {
+            currentStep = step;
+
+            // Hide all steps
+            document.getElementById('step-1-content').classList.add('hidden');
+            document.getElementById('step-2-content').classList.add('hidden');
+            document.getElementById('step-3-content').classList.add('hidden');
+
+            // Show current step
+            document.getElementById(`step-${step}-content`).classList.remove('hidden');
+
+            // Update Wizard Line and Circles
+            const line = document.getElementById('step-line');
+            const c2 = document.getElementById('step-2-circle');
+            const c3 = document.getElementById('step-3-circle');
+            const t2 = document.getElementById('step-2-text');
+            const t3 = document.getElementById('step-3-text');
+
+            if(step === 1) {
+                line.style.width = '0%';
+                c2.className = "w-9 h-9 rounded-full bg-royal-card border-2 border-slate-700 text-slate-400 font-bold flex items-center justify-center text-sm transition-all duration-300";
+                c3.className = "w-9 h-9 rounded-full bg-royal-card border-2 border-slate-700 text-slate-400 font-bold flex items-center justify-center text-sm transition-all duration-300";
+                t2.className = "text-[11px] font-semibold mt-1 text-slate-500";
+                t3.className = "text-[11px] font-semibold mt-1 text-slate-500";
+            } else if(step === 2) {
+                line.style.width = '50%';
+                c2.className = "w-9 h-9 rounded-full bg-gold-500 text-black font-bold flex items-center justify-center text-sm shadow-gold-sm transition-all duration-300";
+                c3.className = "w-9 h-9 rounded-full bg-royal-card border-2 border-slate-700 text-slate-400 font-bold flex items-center justify-center text-sm transition-all duration-300";
+                t2.className = "text-[11px] font-semibold mt-1 text-gold-400";
+                t3.className = "text-[11px] font-semibold mt-1 text-slate-500";
+            } else if(step === 3) {
+                line.style.width = '100%';
+                c2.className = "w-9 h-9 rounded-full bg-gold-500 text-black font-bold flex items-center justify-center text-sm shadow-gold-sm transition-all duration-300";
+                c3.className = "w-9 h-9 rounded-full bg-gold-500 text-black font-bold flex items-center justify-center text-sm shadow-gold-sm transition-all duration-300";
+                t2.className = "text-[11px] font-semibold mt-1 text-gold-400";
+                t3.className = "text-[11px] font-semibold mt-1 text-gold-400";
+            }
+        }
+
+        // Form Submit Handler
+        function handleBookingSubmit(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('patient-name').value;
+            const phone = document.getElementById('patient-phone').value;
+            const firstVisit = document.querySelector('input[name="first_visit"]:checked').value;
+
+            if(!name || !phone) {
+                alert('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+
+            // Populate Modal
+            document.getElementById('sum-service').innerText = selectedService;
+            document.getElementById('sum-date').innerText = selectedDate ? selectedDate.fullDisplay : '';
+            document.getElementById('sum-time').innerText = selectedTimeSlot;
+            document.getElementById('sum-name').innerText = name;
+            document.getElementById('sum-phone').innerText = phone;
+            document.getElementById('sum-first').innerText = firstVisit;
+
+            // Show Modal
+            openModal();
+        }
+
+        // Modal Controls
+        function openModal() {
+            const modal = document.getElementById('confirmation-modal');
+            const box = document.getElementById('modal-box');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            box.classList.remove('scale-95');
+            box.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('confirmation-modal');
+            const box = document.getElementById('modal-box');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            box.classList.remove('scale-100');
+            box.classList.add('scale-95');
+        }
+
+        // Confirm & Redirect to WhatsApp
+        function confirmAndSendWhatsApp() {
+            const clinicPhoneNumber = "201000000000"; // Replace with Dr. Ramy's WhatsApp number
+
+            const name = document.getElementById('patient-name').value;
+            const phone = document.getElementById('patient-phone').value;
+            const firstVisit = document.querySelector('input[name="first_visit"]:checked').value;
+            const notes = document.getElementById('patient-notes').value || 'لا يوجد';
+
+            const message = `مرحباً دكتور رامي، أرغب في تأكيد حجز موعد جديد بالعيادة:
+----------------------------------
+👤 *اسم المريض:* ${name}
+📞 *رقم الجوال:* ${phone}
+🩺 *الخدمة المطلوبة:* ${selectedService}
+📅 *التاريخ:* ${selectedDate ? selectedDate.fullDisplay : ''}
+⏰ *الموعد:* ${selectedTimeSlot}
+❓ *زيارة أولى:* ${firstVisit}
+📝 *ملاحظات/أعراض:* ${notes}
+----------------------------------
+شكراً جزيلاً وفي انتظار تأكيدكم!`;
+
+            const encodedMsg = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${clinicPhoneNumber}?text=${encodedMsg}`;
+
+            window.open(whatsappUrl, '_blank');
+            closeModal();
+        }
+    </script>
+</body>
+</html>
